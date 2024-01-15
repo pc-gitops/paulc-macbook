@@ -6,24 +6,24 @@ metadata:
   namespace: ${nameSpace}
 data:
   clusterType: "macbook"
-  mgmtClusterName: ww-paulc-mac
+  mgmtClusterName: paulc-macbook
   dnsSuffix: kubernetes.docker.internal
-  clusterIP: 10.101.204.108
+  clusterIP: 10.107.83.135
   scmType: github
-  GitHubOrg: ww-gitops
-  GitHubRepo: paulc-mac
+  GitHubOrg: pc-gitops
+  GitHubRepo: paulc-macbook
   globalGitHubOrg: ww-gitops
   globalGitHubRepo: global-config
   globalGitHubBranch: main
-  awsAccountId: "749339757188"
-  prefixName: ww-prc-mac
+  awsAccountId: "none"
+  prefixName: prc-mac
   awsRegion: eu-west-1
-  awsTagCreator: paul.carlton@weave.works
-  awsTagCustomer: weaveworks-cx
+  awsTagCreator: paul.carlton414@gmail.com
+  awsTagCustomer: none
   awsTagProjectGid: "99999"
-  userEmail: paul.carlton@weave.works
+  userEmail: paul.carlton414@gmail.com
   vault_url: https://vault.kubernetes.docker.internal
-  commitUser: paulcarlton-ww
-  awsKeyPairName: paulcarlton-ww
-  sshPubKey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCimazWQYuHPrEVpK9wgK317p6okSNzVzzJXe8gKl0+Mq9G5VuYN1mNqxirhaOD137ZHr0z8zurLeaxW6QxUO5L4KqMUu2RDN1JDcH16Y5rM6GXBYr8nlmWJTikKEaYIScHYyENNWu+/CvMCYChI/xwuYaNkrK1cQzaJ7GnOHSmfB5+E5vcgNDHzmBoATTI6Z5TQ0XKxSDg2EuJGCowttJEpXaFfdkYbthO55jiu1fHrAQOtLGwvD6H+FJCbQlCWa2WiYsrirRJaXVBoRL0Q6Q87scljOntiM4zGXAm0Vc4nLLr256afPMOnfBc7bjAGbTC6jVzVbttHtNFYrn3l5F8XCJ6ngQ8OWuie09qpKNqjxIc//0aSKabMsF/tcOQLNfi/pNDx7SjesbHKdOOGVzwq54CJToFBR0ZAE+x7iPz3W8tNUH6Iw978JSog9micQVRlbIiyvLpOWw1E6xPul1DpZ+dvIhbSHEuEtn9MRwrT8GpbUsYP07eH0ezBgo2hgTS9lAP3hOJvVBIs2vFjp4fGQ2QrIMfG4WN1HGFfn6KV2MiJs1SxMBsTzrBW+qFFb6oaSRVcrTB06IUvhwRNlgZzsOldcoq+4yOElPj1KM/rL/Xlj43Tivae4ykM02sU6t2MOUk/Eswo/EtJTb2gFzgQZAaS/mCeHhhkkCJ5k2pAQ== paul.carlton@weave.works
+  commitUser: paul-carlton
+  awsKeyPairName: paul-carlton
+  sshPubKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJXH+nNeSU7iC2ZSkindt3fG7DUz3tI2ePFw7eQIcIIA paul.carlton414@gmail.com
   capi: "true"
