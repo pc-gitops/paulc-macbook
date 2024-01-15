@@ -61,7 +61,7 @@ spec:
     version: v1.12.6-eksbuild.2
   eksClusterName: test
   region: eu-west-1
-  sshKeyName: paulcarlton-ww
+  sshKeyName: paul-carlton
   version: v1.27
 
 ---
