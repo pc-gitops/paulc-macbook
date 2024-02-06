@@ -12,7 +12,7 @@ data:
   scmType: github
   GitHubOrg: pc-gitops
   GitHubRepo: paulc-macbook
-  globalGitHubOrg: ww-gitops
+  globalGitHubOrg: pc-gitops
   globalGitHubRepo: global-config
   globalGitHubBranch: main
   awsAccountId: "none"
