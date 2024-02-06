@@ -8,7 +8,7 @@ data:
   clusterType: "macbook"
   mgmtClusterName: paulc-macbook
   dnsSuffix: kubernetes.docker.internal
-  clusterIP: 10.110.90.195
+  clusterIP: 10.102.225.116
   scmType: github
   GitHubOrg: pc-gitops
   GitHubRepo: paulc-macbook
@@ -26,4 +26,4 @@ data:
   commitUser: paul-carlton
   awsKeyPairName: paul-carlton
   sshPubKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJXH+nNeSU7iC2ZSkindt3fG7DUz3tI2ePFw7eQIcIIA paul.carlton414@gmail.com
-  capi: "true"
+  capi: "false"
