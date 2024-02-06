@@ -7,9 +7,7 @@ resources:
 - alerts.yaml
 - cluster-config.yaml
 - git-source.yaml
-- gitopssets-role.yaml
 - kustomization.yaml
-- leaf-config.yaml
 - ns.yaml
 # - resource-limits.yaml
 # - resource-quota.yaml

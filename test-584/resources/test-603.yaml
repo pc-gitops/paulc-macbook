@@ -1,9 +1,0 @@
-environments:
-  dev:
-    tfParams:
-      - "d1"
-      - "d2"
-  prod:
-    tfParams:
-      - "p1"
-      - "p2"

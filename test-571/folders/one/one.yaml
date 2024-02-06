@@ -1,9 +1,0 @@
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ${folder}-config
-  namespace: test-one
-data:
-  folder: ${folder}
-

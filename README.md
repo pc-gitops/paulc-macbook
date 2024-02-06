@@ -1,6 +1,6 @@
-# Template for deploying WGE Cluster
+# Template for deploying Local Cluster
 
-This repository contains the template for deploying a WGE cluster. Use this repository template to create a new repository and follow the instructions below to deploy a WGE cluster.
+This repository contains the template for deploying a local cluster. Use this repository template to create a new repository and follow the instructions below to deploy a local cluster.
 
 On a MacBook it is designed to use the Docker Kubernetes deployed from Docker Dashboard but can be used with any Kubernetes cluster. On Linux it will create a Kind cluster.
 
@@ -16,7 +16,6 @@ On a MacBook it is designed to use the Docker Kubernetes deployed from Docker Da
 
 ## Optional
 
-- [gitops](https://docs.gitops.weave.works/docs/next/installation/weave-gitops/#install-the-gitops-cli) (optional only required for GitOps CLI deployments)
 - [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) (optional, only for Linux and local Kind deployments)
 - [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) (optional, only for AWS deployments)
 - [custerctl](https://cluster-api-aws.sigs.k8s.io/getting-started.html#install-clusterctl) (optional, only for Cluster API deployments)
@@ -38,10 +37,8 @@ If you want to use OIDC to login to the WGE GUI you will need to configure your 
 
 ## Deploy
 
-To deploy the WGE cluster run the `setup.sh` script. This will create the WGE cluster and deploy the WGE GUI. If the script fails you can run it again to continue the deployment.
-
-Once Flux has deployed the WGE GUI you can login using the `wge-admin` user and the password in the `resources/wge-admin-password.txt` file or the OIDC login.
+To deploy the cluster run the `setup.sh` script. This will create the cluster and deploy k8s addons. If the script fails you can run it again to continue the deployment.
 
 ## Destroy
 
-To destroy the WGE cluster run the `reset.sh` script. This will destroy the WGE cluster.
+To destroy the cluster run the `reset.sh` script. This will destroy the cluster.
