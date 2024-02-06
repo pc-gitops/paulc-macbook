@@ -198,68 +198,6 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: tf-controller
-  namespace: flux-system
-spec:
-  interval: 10m0s
-  dependsOn:
-    - name: secrets
-  path: ./mgmt-cluster/addons/tf-controller
-  prune: true
-  wait: true
-  sourceRef:
-    kind: GitRepository
-    name: global-config
-  postBuild:
-    substitute:
-      dnsSuffix: kubernetes.docker.internal
-    substituteFrom:
-      - kind: ConfigMap
-        name: cluster-config
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: wge
-  namespace: flux-system
-spec:
-  interval: 10m0s
-  dependsOn:
-    - name: dex
-  path: ./mgmt-cluster/addons/wge
-  prune: true
-  wait: true
-  sourceRef:
-    kind: GitRepository
-    name: global-config
-  postBuild:
-    substituteFrom:
-      - kind: ConfigMap
-        name: cluster-config
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: wge-templates
-  namespace: flux-system
-spec:
-  interval: 10m0s
-  dependsOn:
-    - name: wge
-  path: ./mgmt-cluster/addons/wge-templates
-  prune: true
-  wait: true
-  sourceRef:
-    kind: GitRepository
-    name: global-config
-  postBuild:
-    substituteFrom:
-      - kind: ConfigMap
-        name: cluster-config
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
   name: prom-graf
   namespace: flux-system
 spec:
@@ -280,32 +218,11 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: wge-rbac
-  namespace: flux-system
-spec:
-  interval: 10m0s
-  dependsOn:
-    - name: wge
-  path: ./mgmt-cluster/bases/rbac
-  prune: true
-  wait: true
-  sourceRef:
-    kind: GitRepository
-    name: global-config
-  postBuild:
-    substituteFrom:
-      - kind: ConfigMap
-        name: cluster-config
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
   name: flux
   namespace: flux-system
 spec:
   interval: 10m0s
   dependsOn:
-    - name: wge
     - name: prom-graf
   path: ./mgmt-cluster/bases/flux
   prune: true
@@ -317,23 +234,4 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
-kind: Kustomization
-metadata:
-  name: namespaces
-  namespace: flux-system
-spec:
-  interval: 10m0s
-  dependsOn:
-    - name: wge
-  path: ./mgmt-cluster/namespaces
-  prune: true
-  # wait: true
-  sourceRef:
-    kind: GitRepository
-    name: global-config
-  postBuild:
-    substituteFrom:
-      - kind: ConfigMap
-        name: cluster-config
+
