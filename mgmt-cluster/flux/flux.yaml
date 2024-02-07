@@ -398,7 +398,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-monitoring
-  timeout: 1m0s
   wait: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
