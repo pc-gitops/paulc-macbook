@@ -8,7 +8,7 @@ data:
   clusterType: "macbook"
   mgmtClusterName: paulc-macbook
   dnsSuffix: kubernetes.docker.internal
-  clusterIP: 10.108.158.248
+  clusterIP: 10.110.188.207
   scmType: github
   GitHubOrg: pc-gitops
   GitHubRepo: paulc-macbook
