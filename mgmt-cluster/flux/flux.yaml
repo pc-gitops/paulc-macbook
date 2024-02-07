@@ -7,6 +7,8 @@ spec:
   dependsOn:
   - name: flux-components
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   path: ./mgmt-cluster/addons/kyverno
   prune: true
   wait: true
@@ -23,6 +25,8 @@ spec:
   dependsOn:
   - name: flux-components
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   path: ./mgmt-cluster/addons/cert-manager
   prune: true
   wait: true
@@ -39,6 +43,8 @@ spec:
   dependsOn:
   - name: flux-components
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   path: ./mgmt-cluster/addons/nginx
   prune: true
   wait: true
@@ -58,6 +64,8 @@ spec:
   dependsOn:
   - name: nginx
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   path: ./mgmt-cluster/addons/metrics-server
   prune: true
   wait: true
@@ -74,6 +82,8 @@ spec:
   dependsOn:
   - name: flux-components
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   path: ./mgmt-cluster/addons/reloader
   prune: true
   wait: true
@@ -88,6 +98,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   path: ./mgmt-cluster/cert-config
   prune: true
   wait: true
@@ -110,6 +122,8 @@ spec:
   dependsOn:
     - name: cert-config
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   path: ./mgmt-cluster/addons/vault
   prune: true
   wait: true
@@ -130,6 +144,8 @@ spec:
   dependsOn:
   - name: flux-components
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   path: ./mgmt-cluster/addons/external-secrets
   prune: true
   wait: true
@@ -144,6 +160,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   path: ./mgmt-cluster/secrets
   prune: true
   wait: true
@@ -164,6 +182,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   dependsOn:
     - name: vault
     - name: secrets
@@ -186,6 +206,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   dependsOn:
     - name: vault
   path: ./mgmt-cluster/config
@@ -202,6 +224,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   dependsOn:
     - name: dex
   path: ./mgmt-cluster/addons/monitoring/namespace
@@ -232,7 +256,9 @@ metadata:
   name: flux-mon-ctlr
   namespace: flux-system
 spec:
-  interval: 1h0m0s
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   dependsOn:
   - name: monitoring
   path: ./monitoring/controllers/kube-prometheus-stack
@@ -240,7 +266,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-monitoring
-  timeout: 5m0s
   wait: true
   postBuild:
     substituteFrom:
@@ -254,6 +279,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   dependsOn:
     - name: flux-mon-ctlr
   path: ./mgmt-cluster/addons/monitoring/prometheus
@@ -274,6 +301,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   dependsOn:
     - name: prometheus
   path: ./mgmt-cluster/addons/monitoring/prom-alert
@@ -294,6 +323,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   dependsOn:
     - name: prom-alert
   path: ./mgmt-cluster/addons/monitoring/grafana
@@ -314,6 +345,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   dependsOn:
     - name: grafana
   path: ./mgmt-cluster/addons/monitoring/loki
@@ -334,6 +367,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   dependsOn:
     - name: loki
   path: ./mgmt-cluster/addons/monitoring/graf-agent
@@ -355,7 +390,9 @@ metadata:
 spec:
   dependsOn:
   - name: graf-agent
-  interval: 1h0m0s
+  interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   path: ./monitoring/configs
   prune: true
   sourceRef:
@@ -371,6 +408,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
+  retryInterval: 30s
+  timeout: 30s
   dependsOn:
     - name: dex
   path: ./mgmt-cluster/bases/flux
