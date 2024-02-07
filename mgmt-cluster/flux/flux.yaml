@@ -198,13 +198,113 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: prom-graf
+  name: monitoring
   namespace: flux-system
 spec:
   interval: 10m0s
   dependsOn:
-    - name: secrets
-  path: ./mgmt-cluster/addons/prom-graf
+    - name: dex
+  path: ./mgmt-cluster/addons/monitoring/namespace
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: global-config
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: prometheus
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: monitoring
+  path: ./mgmt-cluster/addons/monitoring/prometheus
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: global-config
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: prom-alert
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: prometheus
+  path: ./mgmt-cluster/addons/monitoring/prom-alert
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: global-config
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: grafana
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: prom-alert
+  path: ./mgmt-cluster/addons/monitoring/grafana
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: global-config
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: loki
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: grafana
+  path: ./mgmt-cluster/addons/monitoring/loki
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: global-config
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: graf-agent
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  dependsOn:
+    - name: loki
+  path: ./mgmt-cluster/addons/monitoring/graf-agent
   prune: true
   wait: true
   sourceRef:
@@ -223,7 +323,7 @@ metadata:
 spec:
   interval: 10m0s
   dependsOn:
-    - name: prom-graf
+    - name: dex
   path: ./mgmt-cluster/bases/flux
   prune: true
   wait: true
