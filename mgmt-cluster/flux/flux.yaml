@@ -429,8 +429,11 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
-  path: ./mgmt-cluster/HOSPENG-8852/github-runners
+  retryInterval: 30s
+  timeout: 30s
   prune: true
+  wait: true
+  path: ./mgmt-cluster/HOSPENG-8852/github-runners
   sourceRef:
     kind: GitRepository
     name: flux-system
