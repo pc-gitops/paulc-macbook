@@ -31,6 +31,8 @@ spec:
     crds: CreateReplace
     remediation:
       retries: -1
+  targetNamespace: github-runners
+  createNamespace: github-runners
   values:
     metrics:
       controllerManagerAddr: ":8080"
