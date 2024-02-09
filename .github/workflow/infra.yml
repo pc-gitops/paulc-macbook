@@ -1,6 +1,9 @@
 name: Actions Runner Controller Demo
 on:
   push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]:
 
 jobs:
   Explore-GitHub-Actions:
