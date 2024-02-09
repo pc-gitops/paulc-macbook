@@ -3,7 +3,7 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]:
+    branches: [ main ]
 
 jobs:
   Explore-GitHub-Actions:
@@ -11,3 +11,4 @@ jobs:
     runs-on: github-runner-set-infra
     steps:
     - run: echo "🎉 This job uses runner scale set runners!"
+
