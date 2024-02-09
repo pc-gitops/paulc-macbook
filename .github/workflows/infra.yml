@@ -6,9 +6,8 @@ on:
     branches: [ main ]
 
 jobs:
-  Explore-GitHub-Actions:
-    # You need to use the INSTALLATION_NAME from the previous step
+  build:
     runs-on: github-runner-set-infra
     steps:
-    - run: echo "🎉 This job uses runner scale set runners!"
-
+    - name: Infra
+      run: infra-runner/bin/action.sh
