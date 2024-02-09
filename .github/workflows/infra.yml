@@ -10,4 +10,4 @@ jobs:
     runs-on: github-runner-set-infra
     steps:
     - name: Infra
-      run: infra-runner/bin/action.sh
+      run: ls -lR
