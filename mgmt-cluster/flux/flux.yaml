@@ -421,20 +421,3 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: github-runners
-  namespace: flux-system
-spec:
-  interval: 10m0s
-  retryInterval: 30s
-  timeout: 30s
-  prune: true
-  wait: true
-  path: ./mgmt-cluster/HOSPENG-8852/github-runners
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  
