@@ -17,7 +17,7 @@ data:
   globalGitHubBranch: main
   awsAccountId: "none"
   prefixName: prc-mac
-  awsRegion: eu-west-1
+  awsRegion: ca-central-1
   awsTagCreator: paul.carlton414@gmail.com
   awsTagCustomer: none
   awsTagProjectGid: "99999"
