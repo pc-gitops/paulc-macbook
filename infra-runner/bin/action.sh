@@ -66,7 +66,7 @@ if [ "${GITHUB_REF_NAME}" != main ]; then
          jq --arg file_path "$deleted_file" -r '.[] | select (.filename == $file_path ) | .raw_url')"
          
         curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28"  \
-         ${raw_url | \
+         ${raw_url} | \
          jq --arg file_path "$deleted_file" -r '.[] | select (.filename == $file_path ) | .raw_url')
           | \
         grep -v -E "^@@" |sed s/^-//g > $HOME/$deleted_file
