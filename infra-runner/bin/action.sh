@@ -36,6 +36,7 @@ function args() {
 
 args "$@"
 
+
 GHT="$(kubectl get secret -n github-runner-set github-runner-token -o=jsonpath='{.data.github_token}' | base64 -d)"
 echo "GHT: $GHT"
 
