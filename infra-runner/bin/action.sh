@@ -37,7 +37,7 @@ function args() {
 args "$@"
 
 export SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-source ${SCRIPT_DIR}/bin/lib.sh
+source ${SCRIPT_DIR}/lib.sh
 
 if [ "${GITHUB_REF_NAME}" != main ]; then
     
