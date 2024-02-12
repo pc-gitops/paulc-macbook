@@ -15,3 +15,42 @@ spec:
     name: vault
   target:
     name: github-runner-token
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::617912315635:role/management-tf-controller
+  name: infra-runner
+  namespace: github-runner-set
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: infra-runner
+  namespace: github-runner-set
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: infra-runner
+subjects:
+- kind: ServiceAccount
+  name: infra-runner
+  namespace: github-runner-set
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: infra-runner
+  namespace: github-runner-set
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  - configmap
+  verbs:
+  - get
+  - list
+
+
