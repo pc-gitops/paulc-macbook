@@ -42,7 +42,7 @@ if [ -n "$debug" ]; then
     exit
 fi
 
-source infra-runner/bin/lib.sh
+source /home/runner/bin/lib.sh
 
 # git config --file /home/infra/.gitconfig --add safe.directory /builds/MedxHealthCorp/environments
 
