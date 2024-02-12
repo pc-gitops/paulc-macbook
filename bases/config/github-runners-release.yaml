@@ -5,4 +5,4 @@ metadata:
   namespace: flux-system
 data:
   release_type: branch
-  release_value: main
+  release_value: test
