@@ -44,7 +44,7 @@ if [ -n "$debug" ]; then
     exit
 fi
 
-source /home/runner/bin/lib.sh
+source ${SCRIPT_DIR}/bin/lib.sh
 
 if [ -n "${CI_COMMIT_BRANCH:-}" ]; then # merge to main
     if [ "$CI_COMMIT_BRANCH" != main ]; then
