@@ -66,10 +66,7 @@ if [ "${GITHUB_REF_NAME}" != main ]; then
          jq --arg file_path "$deleted_file" -r '.[] | select (.filename == $file_path ) | .raw_url')"
          
         curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28"  \
-         ${raw_url} | \
-         jq --arg file_path "$deleted_file" -r '.[] | select (.filename == $file_path ) | .raw_url')
-          | \
-        grep -v -E "^@@" |sed s/^-//g > $HOME/$deleted_file
+         ${raw_url} > $HOME/$deleted_file
     done
 
     curl --header "PRIVATE-TOKEN: ${gitlab_token}" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/repository/commits/$CI_COMMIT_SHA/diff | \
