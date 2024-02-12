@@ -38,7 +38,9 @@ args "$@"
 
 if [ -n "$debug" ]; then
     env | sort
-    ls -lR
+    pwd
+    ls -laR .
+    ls -laR /home/runner
     exit
 fi
 
