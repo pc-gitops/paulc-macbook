@@ -1,28 +1,83 @@
-ARG BASE_IMAGE
-FROM $BASE_IMAGE
+# Source: https://github.com/dotnet/dotnet-docker
+FROM mcr.microsoft.com/dotnet/runtime-deps:6.0-jammy as build
+
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETPLATFORM=linux/amd64
+ARG RUNNER_VERSION=2.313.0
+ARG RUNNER_CONTAINER_HOOKS_VERSION=0.5.1
+ARG DOCKER_VERSION=25.0.2
+ARG BUILDX_VERSION=0.12.1
+
+RUN apt update -y && apt install curl unzip -y
+
+WORKDIR /actions-runner
+RUN export RUNNER_ARCH=${TARGETARCH} \
+    && if [ "$RUNNER_ARCH" = "amd64" ]; then export RUNNER_ARCH=x64 ; fi \
+    && curl -f -L -o runner.tar.gz https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-${TARGETOS}-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz \
+    && tar xzf ./runner.tar.gz \
+    && rm runner.tar.gz
+
+RUN curl -f -L -o runner-container-hooks.zip https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-k8s-${RUNNER_CONTAINER_HOOKS_VERSION}.zip \
+    && unzip ./runner-container-hooks.zip -d ./k8s \
+    && rm runner-container-hooks.zip
+
+RUN export RUNNER_ARCH=${TARGETARCH} \
+    && if [ "$RUNNER_ARCH" = "amd64" ]; then export DOCKER_ARCH=x86_64 ; fi \
+    && if [ "$RUNNER_ARCH" = "arm64" ]; then export DOCKER_ARCH=aarch64 ; fi \
+    && curl -fLo docker.tgz https://download.docker.com/${TARGETOS}/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz \
+    && tar zxvf docker.tgz \
+    && rm -rf docker.tgz \
+    && mkdir -p /usr/local/lib/docker/cli-plugins \
+    && curl -fLo /usr/local/lib/docker/cli-plugins/docker-buildx \
+        "https://github.com/docker/buildx/releases/download/v${BUILDX_VERSION}/buildx-v${BUILDX_VERSION}.linux-${TARGETARCH}" \
+    && chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
+
+FROM mcr.microsoft.com/dotnet/runtime-deps:6.0-jammy
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV RUNNER_MANUALLY_TRAP_SIG=1
+ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1
+ENV ImageOS=ubuntu22
+
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends \
+    sudo \
+    lsb-release \
+    wget unzip git jq curl gettext-base \
+    && rm -rf /var/lib/apt/lists/* && \
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod 755 kubectl && \
+    mv kubectl /usr/local/bin && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    sudo ./aws/install && \
+    rm -f awscliv2.zip
+
+RUN envsubst --help
 
 ARG TARGETARCH
 ARG INFRA_EXEC_VERSION
 ARG INFRA_EXEC_URL_PREFIX
 ARG INFRA_EXEC_NAME
 
-# Switch to root to have permissions for operations
-USER root
-
-# terraform
 ADD ${INFRA_EXEC_URL_PREFIX}${INFRA_EXEC_VERSION}/${INFRA_EXEC_NAME}_${INFRA_EXEC_VERSION}_linux_${TARGETARCH}.zip ${INFRA_EXEC_NAME}_${INFRA_EXEC_VERSION}_linux_${TARGETARCH}.zip
-RUN apk update && apk upgrade && apk add --no-cache bash && apk add unzip git jq curl envsubst aws-cli kubectl && \
-    wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && \
-    chmod +x /usr/bin/yq >/dev/null && \
-    unzip -q ${INFRA_EXEC_NAME}_${INFRA_EXEC_VERSION}_linux_${TARGETARCH}.zip -d /usr/local/bin/ && \
+RUN unzip -q ${INFRA_EXEC_NAME}_${INFRA_EXEC_VERSION}_linux_${TARGETARCH}.zip -d /usr/local/bin/ && \
     rm ${INFRA_EXEC_NAME}_${INFRA_EXEC_VERSION}_linux_${TARGETARCH}.zip && \
-    mv /usr/local/bin/${INFRA_EXEC_NAME} /usr/local/bin/terraform && \
-    chmod +x /usr/local/bin/terraform && \
-    addgroup -S infra && \
-    adduser --home /home/infra --shell /bin/bash --ingroup infra --system --uid 1000 infra
+    chmod +x /usr/local/bin/terraform
 
-ADD resources/image-gitconfig /home/infra/.gitconfig
-RUN chmod 777 /home/infra/.gitconfig && \
-    chown infra:infra /home/infra/.gitconfig
-# Switch back to the non-root user after operations
-USER infra:infra
+RUN adduser --disabled-password --gecos "" --uid 1001 runner \
+    && groupadd docker --gid 123 \
+    && usermod -aG sudo runner \
+    && usermod -aG docker runner \
+    && echo "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers \
+    && echo "Defaults env_keep += \"DEBIAN_FRONTEND\"" >> /etc/sudoers
+
+WORKDIR /home/runner
+
+COPY --chown=runner:docker --from=build /actions-runner .
+COPY --from=build /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib/docker/cli-plugins/docker-buildx
+
+RUN install -o root -g root -m 755 docker/* /usr/bin/ && rm -rf docker
+
+USER runner

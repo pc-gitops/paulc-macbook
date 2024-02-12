@@ -9,14 +9,12 @@ export BASE_DIR=$(git rev-parse --show-toplevel)
 
 pushd ${BASE_DIR}/infra-runner
 
-export BASE_IMAGE=alpine:3.19.0
 export INFRA_EXEC_VERSION=1.5.7
 export INFRA_EXEC_NAME=terraform
 export INFRA_EXEC_URL_PREFIX=https://releases.hashicorp.com/terraform/
-export VERSION=0.0.1
+export VERSION=0.0.2
 
 docker build . -f Dockerfile --no-cache \
-    --build-arg="BASE_IMAGE=$BASE_IMAGE" \
     --build-arg="INFRA_EXEC_VERSION=$INFRA_EXEC_VERSION" \
     --build-arg="INFRA_EXEC_NAME=$INFRA_EXEC_NAME" \
     --build-arg="INFRA_EXEC_URL_PREFIX=$INFRA_EXEC_URL_PREFIX" \
