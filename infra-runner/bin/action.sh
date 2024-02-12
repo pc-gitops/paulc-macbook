@@ -36,12 +36,13 @@ function args() {
 
 args "$@"
 
-source infra-runner/bin/lib.sh
-
 if [ -n "$debug" ]; then
     env | sort
     ls -lR
+    exit
 fi
+
+source infra-runner/bin/lib.sh
 
 # git config --file /home/infra/.gitconfig --add safe.directory /builds/MedxHealthCorp/environments
 
