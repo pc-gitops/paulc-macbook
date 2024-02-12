@@ -52,5 +52,9 @@ rules:
   verbs:
   - get
   - list
+  - create
+  - delete
+  - patch
+  - update
 
 
