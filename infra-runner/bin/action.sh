@@ -46,8 +46,6 @@ fi
 
 source /home/runner/bin/lib.sh
 
-# git config --file /home/infra/.gitconfig --add safe.directory /builds/MedxHealthCorp/environments
-
 if [ -n "${CI_COMMIT_BRANCH:-}" ]; then # merge to main
     if [ "$CI_COMMIT_BRANCH" != main ]; then
         echo "Expecting main branch!"
