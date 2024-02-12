@@ -9,3 +9,4 @@ jobs:
     runs-on: github-runner-set-infra
     steps:
     - run: /home/runner/bin/action.sh --debug
+    - run: ls -la /home/runner
