@@ -28,5 +28,5 @@ spec:
       spec:
         containers:
           - name: runner
-            image: pcarlton/infra-runner:0.0.3
+            image: pcarlton/infra-runner:0.0.4
             command: ["./run.sh"]
