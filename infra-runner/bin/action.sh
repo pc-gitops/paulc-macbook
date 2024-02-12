@@ -96,7 +96,7 @@ else # merge request commit
          ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
          jq -r '.[] | select ( .status == "removed" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" | cut -f4 -d/ | sort -u > $HOME/destroyed.txt || echo ""
 
-    curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
+    curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28" \
          ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
          jq -r '.[] | select ( .status == "modified" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" | cut -f4 -d/ | sort -u > $HOME/modified.txt || echo "no modificatons"
 
