@@ -8,4 +8,4 @@ jobs:
   infra:
     runs-on: github-runner-set-infra
     steps:
-    - run: bin/actions.sh --debug
+    - run: bin/action.sh --debug
