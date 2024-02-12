@@ -80,4 +80,6 @@ COPY --from=build /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib
 
 RUN install -o root -g root -m 755 docker/* /usr/bin/ && rm -rf docker
 
+ADD bin bin
+
 USER runner

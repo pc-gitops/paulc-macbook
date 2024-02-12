@@ -12,7 +12,7 @@ pushd ${BASE_DIR}/infra-runner
 export INFRA_EXEC_VERSION=1.5.7
 export INFRA_EXEC_NAME=terraform
 export INFRA_EXEC_URL_PREFIX=https://releases.hashicorp.com/terraform/
-export VERSION=0.0.2
+export VERSION=0.0.3
 
 docker build . -f Dockerfile --no-cache \
     --build-arg="INFRA_EXEC_VERSION=$INFRA_EXEC_VERSION" \

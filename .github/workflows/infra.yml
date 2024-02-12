@@ -1,12 +1,11 @@
-name: Actions Runner Controller Demo
+name: Infrastructure Management
 on:
   push:
     branches: [ main ]
   pull_request:
 
 jobs:
-  Explore-GitHub-Actions:
-    # You need to use the INSTALLATION_NAME from the previous step
+  infra:
     runs-on: github-runner-set-infra
     steps:
-    - run: ls -lR
+    - run: bin/actions.sh --debug

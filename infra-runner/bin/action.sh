@@ -40,6 +40,7 @@ source infra-runner/bin/lib.sh
 
 if [ -n "$debug" ]; then
     env | sort
+    ls -lR
 fi
 
 # git config --file /home/infra/.gitconfig --add safe.directory /builds/MedxHealthCorp/environments
