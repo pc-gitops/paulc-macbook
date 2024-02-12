@@ -9,4 +9,4 @@ jobs:
     # You need to use the INSTALLATION_NAME from the previous step
     runs-on: github-runner-set-infra
     steps:
-    - run: echo "hi"
+    - run: env
