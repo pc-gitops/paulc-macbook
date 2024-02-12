@@ -46,6 +46,8 @@ fi
 
 source ${SCRIPT_DIR}/bin/lib.sh
 
+exit
+
 if [ -n "${CI_COMMIT_BRANCH:-}" ]; then # merge to main
     if [ "$CI_COMMIT_BRANCH" != main ]; then
         echo "Expecting main branch!"
