@@ -43,6 +43,7 @@ fi
 git clone --depth 1 --branch ${GITHUB_HEAD_REF:-main} ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git ${GITHUB_HEAD_REF:-main} >/dev/null
 
 export WORK_DIR=$PWD
+export GHT=${GITHUB_TOKEN:-none}
 
 pushd ${GITHUB_HEAD_REF:-main}
 
