@@ -45,14 +45,15 @@ if [ -n "$debug" ]; then
 fi
 
 source ${SCRIPT_DIR}/bin/lib.sh
-GITHUB_PR_NUM="$(echo $)
 
 exit
 
 if [ "${GITHUB_REF_NAME}" != main ]; then
+    
+    GITHUB_PR_NUM="$(echo $GITHUB_REF_NAME | cut -f1 -d/)
 
     curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28"  \
-         ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pulls/1/files | \
+         ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
          jq -r '.[] | select ( .status == "removed" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" > $HOME/deleted.txt || \
          echo "no deletions"
 
@@ -61,7 +62,7 @@ if [ "${GITHUB_REF_NAME}" != main ]; then
     do
         mkdir -p $(dirname $HOME/$deleted_file)
         curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28"  \
-         ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pulls/1/files | \
+         ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
          jq -r '.[] | select (.new_path == $file_path ) | .diff' | \
         grep -v -E "^@@" |sed s/^-//g > $HOME/$deleted_file
     done
