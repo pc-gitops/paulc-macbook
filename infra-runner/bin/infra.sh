@@ -48,6 +48,6 @@ pushd ${GITHUB_HEAD_REF:-main}
 
 [ "${GITHUB_REF_NAME}" == main ] && plan="" || plan="--plan-only"
 
-${GITHUB_HEAD_REF:main}/infra-runner/bin/action.sh $debug $plan
+${GITHUB_HEAD_REF:-main}/infra-runner/bin/action.sh $debug $plan
 
 popd
