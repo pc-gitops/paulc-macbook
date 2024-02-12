@@ -40,14 +40,14 @@ if [ -n "$debug" ]; then
     pwd
 fi
 
-git clone --depth 1 --branch ${GITHUB_HEAD_REF} ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git ${GITHUB_HEAD_REF} >/dev/null
+git clone --depth 1 --branch ${GITHUB_HEAD_REF:-main} ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git ${GITHUB_HEAD_REF:-main} >/dev/null
 
 export WORK_DIR=$PWD
 
-pushd ${GITHUB_REF_NAME}
+pushd ${GITHUB_HEAD_REF:-main}
 
 [ "${GITHUB_REF_NAME}" == main ] && plan="" || plan="--plan-only"
 
-${GITHUB_HEAD_REF}/infra-runner/bin/action.sh $debug $plan
+${GITHUB_HEAD_REF:main}/infra-runner/bin/action.sh $debug $plan
 
 popd
