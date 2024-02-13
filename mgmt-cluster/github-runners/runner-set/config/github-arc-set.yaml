@@ -19,8 +19,8 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  # annotations:
-  #   eks.amazonaws.com/role-arn: arn:aws:iam::617912315635:role/management-tf-controller
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::617912315635:role/management-tf-controller
   name: infra-runner
   namespace: github-runner-set
 ---
