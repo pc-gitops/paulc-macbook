@@ -24,9 +24,31 @@ spec:
   values:
     githubConfigUrl: "https://github.com/pc-gitops/paulc-macbook"
     githubConfigSecret: github-runner-token
+    ## maxRunners is the max number of runners the auto scaling runner set will scale up to.
+    maxRunners: 3
+
+    ## minRunners is the min number of runners the auto scaling runner set will scale down to.
+    minRunners: 1
+
+    containerMode:
+      type: kubernetes
+      ## the following is required when containerMode.type=kubernetes
+      kubernetesModeWorkVolumeClaim:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: "hostpath"
+        resources:
+          requests:
+            storage: 1Gi
+
+      kubernetesModeServiceAccount:
+        annotations:
+          eks.amazonaws.com/role-arn: arn:aws:iam::617912315635:role/management-tf-controller
+
     template:
       spec:
         containers:
           - name: runner
-            image: pcarlton/infra-runner:0.0.5
+            image: pcarlton/infra-runner:0.0.12
             command: ["./run.sh"]
+    #    ServiceAccountName: infra-runner
+

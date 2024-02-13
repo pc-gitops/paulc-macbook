@@ -12,6 +12,7 @@ function usage()
 
 function args() {
   debug=""
+  curl_debug="-s"
   op=""
 
   arg_list=( "$@" )
@@ -19,7 +20,7 @@ function args() {
   arg_index=0
   while (( arg_index < arg_count )); do
     case "${arg_list[${arg_index}]}" in
-          "--debug") debug="--debug";set -x;;
+          "--debug") debug="--debug";curl_debug="-v";set -x;;
           "--plan-only") op="--plan-only";set -x;;
                "-h") usage; exit;;
            "--help") usage; exit;;
@@ -36,65 +37,83 @@ function args() {
 
 args "$@"
 
-if [ -n "$debug" ]; then
-    env | sort
-    pwd
-    ls -laR .
-    ls -laR /home/runner
-    exit
-fi
+# kubectl config set-cluster the-cluster --server="https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}" --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+# kubectl config set-credentials pod-token --token="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
+# kubectl config set-context pod-context --cluster=the-cluster --user=pod-token
+# kubectl config use-context pod-context
+kubectl -v 12 version
+GHT="$(kubectl get secret -n github-runner-set github-runner-token -o=jsonpath='{.data.github_token}' | base64 -d)"
+echo "GHT: $GHT"
 
-source /home/runner/bin/lib.sh
+export SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source ${SCRIPT_DIR}/lib.sh
 
-# git config --file /home/infra/.gitconfig --add safe.directory /builds/MedxHealthCorp/environments
+if [ "${GITHUB_REF_NAME}" != main ]; then
+    
+    GITHUB_PR_NUM="$(echo $GITHUB_REF_NAME | cut -f1 -d/)"
 
-if [ -n "${CI_COMMIT_BRANCH:-}" ]; then # merge to main
-    if [ "$CI_COMMIT_BRANCH" != main ]; then
-        echo "Expecting main branch!"
+    resp_code="$(curl -w "%{http_code}" -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files --output pull-files.json)"
+    if [ "$resp_code" != 200 ]; then
+        echo "Failed to get pull request files: $resp_code"
+        cat pull-files.json
         exit 1
-    fi
-
-    curl --header "PRIVATE-TOKEN: ${gitlab_token}" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/repository/commits/$CI_COMMIT_SHA/diff | \
-        jq -r '.[] | select (.deleted_file == true) | .new_path' | grep -E "^clusters/infra/.*/.*" > $HOME/deleted.txt || echo "no deletions"
+    fi  
+    jq -r '.[] | select ( .status == "removed" ) | .filename' pull-files.json | grep -E "^clusters/management/infra/.*/.*" > $HOME/deleted.txt || \
+         echo "no deletions"
+    rm pull-files.json
 
     rm -rf $HOME/destroy-list.txt
     for deleted_file in $(cat $HOME/deleted.txt)
     do
         mkdir -p $(dirname $HOME/$deleted_file)
-        curl --header "PRIVATE-TOKEN: ${gitlab_token}" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/repository/commits/$CI_COMMIT_SHA/diff | \
-        jq --arg file_path "$deleted_file" -r '.[] | select (.new_path == $file_path ) | .diff' | \
-        grep -v -E "^@@" |sed s/^-//g > $HOME/$deleted_file
+
+        raw_url="$(curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         jq --arg file_path "$deleted_file" -r '.[] | select (.filename == $file_path ) | .raw_url')"
+         
+        curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
+         ${raw_url} > $HOME/$deleted_file
     done
 
-    curl --header "PRIVATE-TOKEN: ${gitlab_token}" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/repository/commits/$CI_COMMIT_SHA/diff | \
-        jq -r '.[] | select (.deleted_file == true) | .new_path' | grep -E "^clusters/infra/.*/.*" | cut -f3 -d/ | sort -u > $HOME/destroyed.txt || echo ""
+    curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         jq -r '.[] | select ( .status == "removed" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" | cut -f4 -d/ | sort -u > $HOME/destroyed.txt || echo ""
 
-    curl --header "PRIVATE-TOKEN: ${gitlab_token}" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/repository/commits/$CI_COMMIT_SHA/diff | \
-        jq -r '.[] | select (.deleted_file != true) | .new_path' | grep -E "^clusters/infra/.*/.*" | cut -f3 -d/ | sort -u > $HOME/modified.txt || echo "no modificatons"
+    curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         jq -r '.[] | select ( .status == "modified" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" | cut -f4 -d/ | sort -u > $HOME/modified.txt || echo "no modificatons"
 
 else # merge request commit
 
-    curl --header "PRIVATE-TOKEN: ${gitlab_token}" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}/changes | \
-        jq -r '.changes[] | select (.deleted_file == true) | .new_path' | grep -E "^clusters/infra/.*/.*" > $HOME/deleted.txt || echo "no deletions"
+     GITHUB_PR_NUM="main"
+
+    curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         jq -r '.[] | select ( .status == "removed" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" > $HOME/deleted.txt || \
+         echo "no deletions"
 
     rm -rf $HOME/destroy-list.txt
     for deleted_file in $(cat $HOME/deleted.txt)
     do
         mkdir -p $(dirname $HOME/$deleted_file)
-        curl --header "PRIVATE-TOKEN: ${gitlab_token}" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}/changes | \
-        jq --arg file_path "$deleted_file" -r '.changes[] | select (.new_path == $file_path ) | .diff' | \
-        grep -v -E "^@@" |sed s/^-//g > $HOME/$deleted_file
+        raw_url="$(curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         jq --arg file_path "$deleted_file" -r '.[] | select (.filename == $file_path ) | .raw_url')"
+         
+        curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
+         ${raw_url} > $HOME/$deleted_file
     done
 
-    curl --header "PRIVATE-TOKEN: ${gitlab_token}" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}/changes | \
-        jq -r '.changes[] | select (.deleted_file == true) | .new_path' | grep -E "^clusters/infra/.*/.*" | cut -f3 -d/ | sort -u > $HOME/destroyed.txt || echo ""
+    curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         jq -r '.[] | select ( .status == "removed" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" | cut -f4 -d/ | sort -u > $HOME/destroyed.txt || echo ""
 
-    curl --header "PRIVATE-TOKEN: ${gitlab_token}" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}/changes | \
-        jq -r '.changes[] | select (.deleted_file != true) | .new_path' | grep -E "^clusters/infra/.*/.*" | cut -f3 -d/ | sort -u > $HOME/modified.txt || echo "no modificatons"
+    curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28" \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         jq -r '.[] | select ( .status == "modified" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" | cut -f4 -d/ | sort -u > $HOME/modified.txt || echo "no modificatons"
 
 fi
-
-ls -lR $HOME
 
 echo "Deleted infastructure for clusters..."
 cat $HOME/destroyed.txt    # Get deleted and modified
@@ -107,18 +126,14 @@ if [ -e  $HOME/modified.txt ]; then
     do
         export CLUSTER_NAME
         export tf_version=${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:-main}
-        if [ -e  $BASE_DIR/clusters/infra/$CLUSTER_NAME/tf-version.sh ]; then
-            source $BASE_DIR/clusters/infra/$CLUSTER_NAME/tf-version.sh
+        if [ -e  $BASE_DIR/clusters/management/infra/$CLUSTER_NAME/tf-version.sh ]; then
+            source $BASE_DIR/clusters/management/infra/$CLUSTER_NAME/tf-version.sh
         fi
         tf_path="$(get_tf_version $tf_version)"
         pushd $tf_path/terraform > /dev/null
         steps=cluster
-        if [ -e $BASE_DIR/clusters/infra/$CLUSTER_NAME/multi-step.txt ]; then
-            steps="$(cat $BASE_DIR/clusters/infra/$CLUSTER_NAME/multi-step.txt)"
-            if [ -n "$op" ]; then
-                echo "plan not supported for multi-step terraform"
-                continue
-            fi
+        if [ -e $BASE_DIR/clusters/management/infra/$CLUSTER_NAME/multi-step.txt ]; then
+            steps="$(cat $BASE_DIR/clusters/management/infra/$CLUSTER_NAME/multi-step.txt)"
         fi
         $SCRIPT_DIR/tf-run.sh $debug $op $steps
         popd
@@ -130,22 +145,18 @@ if [ -e  $HOME/destroyed.txt ]; then
     do
         export CLUSTER_NAME
         export tf_version=${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:-main}
-        if [ -e  $BASE_DIR/clusters/infra/$CLUSTER_NAME/tf-version.sh ]; then
-            source $BASE_DIR/clusters/infra/$CLUSTER_NAME/tf-version.sh
+        if [ -e  $BASE_DIR/clusters/management/infra/$CLUSTER_NAME/tf-version.sh ]; then
+            source $BASE_DIR/clusters/management/infra/$CLUSTER_NAME/tf-version.sh
         else
-            if [ -e  $HOME/clusters/infra/$CLUSTER_NAME/tf-version.sh ]; then
-                source $HOME/clusters/infra/$CLUSTER_NAME/tf-version.sh
+            if [ -e  $HOME/clusters/management/infra/$CLUSTER_NAME/tf-version.sh ]; then
+                source $HOME/clusters/management/infra/$CLUSTER_NAME/tf-version.sh
             fi
         fi
         tf_path="$(get_tf_version $tf_version)"
         pushd $tf_path/terraform > /dev/null
         steps=cluster
-        if [ -e $HOME/clusters/infra/$CLUSTER_NAME/multi-step.txt ]; then
-            steps="$(cat $HOME/clusters/infra/$CLUSTER_NAME/multi-step.txt | awk '{ for (i=NF; i>1; i--) printf("%s ",$i); print $1; }')"
-            if [ -n "$op" ]; then
-                echo "plan not supported for multi-step terraform"
-                continue
-            fi
+        if [ -e $HOME/clusters/management/infra/$CLUSTER_NAME/multi-step.txt ]; then
+            steps="$(cat $HOME/clusters/management/infra/$CLUSTER_NAME/multi-step.txt | awk '{ for (i=NF; i>1; i--) printf("%s ",$i); print $1; }')"
         fi
         $SCRIPT_DIR/tf-run.sh $debug --root-dir $HOME --destroy $op $steps
         popd
