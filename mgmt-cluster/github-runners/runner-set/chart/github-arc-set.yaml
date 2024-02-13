@@ -35,20 +35,20 @@ spec:
       ## the following is required when containerMode.type=kubernetes
       kubernetesModeWorkVolumeClaim:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: "hostpath"
+        storageClassName: "local-storage"
         resources:
           requests:
             storage: 1Gi
 
       kubernetesModeServiceAccount:
         annotations:
-          eks.amazonaws.com/role-arn: arn:aws:iam::617912315635:role/management-tf-controller
+          eks.amazonaws.com/role-arn: ${tf_controller_sa_iam_role}
 
     template:
       spec:
         containers:
           - name: runner
-            image: pcarlton/infra-runner:0.0.12
+            image: 617912315635.dkr.ecr.us-west-2.amazonaws.com/infra-runner:0.1.0
             command: ["./run.sh"]
     #    ServiceAccountName: infra-runner
 
