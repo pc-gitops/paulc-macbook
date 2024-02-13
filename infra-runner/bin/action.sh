@@ -44,7 +44,6 @@ kubectl -v 12 version
 GHT="$(kubectl get secret -n github-runner-set github-runner-token -o=jsonpath='{.data.github_token}' | base64 -d)"
 echo "GHT: $GHT"
 
-
 export SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source ${SCRIPT_DIR}/lib.sh
 
