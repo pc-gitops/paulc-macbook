@@ -39,8 +39,8 @@ spec:
         resources:
           requests:
             storage: 1Gi
-      kubernetesModeServiceAccount:
-        annotations:
+      # kubernetesModeServiceAccount:
+      #   annotations:
 
     template:
       spec:
