@@ -51,6 +51,4 @@ spec:
             image: pcarlton/infra-runner:0.0.12
             command: ["./run.sh"]
     #    ServiceAccountName: infra-runner
-    # controllerServiceAccount:
-    #   namespace: github-runner-set
-    #   name: infra-runner
+
