@@ -39,6 +39,7 @@ spec:
         resources:
           requests:
             storage: 1Gi
+
       kubernetesModeServiceAccount:
         annotations:
           eks.amazonaws.com/role-arn: arn:aws:iam::617912315635:role/management-tf-controller
