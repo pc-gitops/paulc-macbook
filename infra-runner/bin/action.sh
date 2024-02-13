@@ -67,9 +67,9 @@ if [ "${GITHUB_REF_NAME}" != main ]; then
     for deleted_file in $(cat $HOME/deleted.txt)
     do
         mkdir -p $(dirname $HOME/$deleted_file)
-        
+
         raw_url="$(curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
-         ${GITHUB_API_URL}/repos${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
          jq --arg file_path "$deleted_file" -r '.[] | select (.filename == $file_path ) | .raw_url')"
          
         curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
@@ -77,11 +77,11 @@ if [ "${GITHUB_REF_NAME}" != main ]; then
     done
 
     curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
-         ${GITHUB_API_URL}/repos${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
          jq -r '.[] | select ( .status == "removed" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" | cut -f4 -d/ | sort -u > $HOME/destroyed.txt || echo ""
 
     curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
-         ${GITHUB_API_URL}/repos${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
          jq -r '.[] | select ( .status == "modified" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" | cut -f4 -d/ | sort -u > $HOME/modified.txt || echo "no modificatons"
 
 else # merge request commit
@@ -89,7 +89,7 @@ else # merge request commit
      GITHUB_PR_NUM="main"
 
     curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
-         ${GITHUB_API_URL}/repos${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
          jq -r '.[] | select ( .status == "removed" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" > $HOME/deleted.txt || \
          echo "no deletions"
 
@@ -98,7 +98,7 @@ else # merge request commit
     do
         mkdir -p $(dirname $HOME/$deleted_file)
         raw_url="$(curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
-         ${GITHUB_API_URL}/repos${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
          jq --arg file_path "$deleted_file" -r '.[] | select (.filename == $file_path ) | .raw_url')"
          
         curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
@@ -106,11 +106,11 @@ else # merge request commit
     done
 
     curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28"  \
-         ${GITHUB_API_URL}/repos${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
          jq -r '.[] | select ( .status == "removed" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" | cut -f4 -d/ | sort -u > $HOME/destroyed.txt || echo ""
 
     curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GHT}" -H "X-GitHub-Api-Version: 2022-11-28" \
-         ${GITHUB_API_URL}/repos${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
+         ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PR_NUM}/files | \
          jq -r '.[] | select ( .status == "modified" ) | .filename' | grep -E "^clusters/management/infra/.*/.*" | cut -f4 -d/ | sort -u > $HOME/modified.txt || echo "no modificatons"
 
 fi
