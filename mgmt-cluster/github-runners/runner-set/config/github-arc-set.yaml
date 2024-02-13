@@ -15,14 +15,14 @@ spec:
     name: vault
   target:
     name: github-runner-token
-# ---
-# apiVersion: v1
-# kind: ServiceAccount
-# metadata:
-#   annotations:
-#     eks.amazonaws.com/role-arn: arn:aws:iam::617912315635:role/management-tf-controller
-#   name: infra-runner
-#   namespace: github-runner-set
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  # annotations:
+  #   eks.amazonaws.com/role-arn: arn:aws:iam::617912315635:role/management-tf-controller
+  name: infra-runner
+  namespace: github-runner-set
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -35,7 +35,7 @@ roleRef:
   name: infra-runner
 subjects:
 - kind: ServiceAccount
-  name: default
+  name: infra-runner
   namespace: github-runner-set
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -47,7 +47,7 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - configmap
+  - "*"
   verbs:
   - get
   - list
@@ -55,61 +55,61 @@ rules:
   - delete
   - patch
   - update
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  verbs:
-  - create
-  - delete
-  - get
-- apiGroups:
-  - ""
-  resources:
-  - pods/status
-  verbs:
-  - get
-- apiGroups:
-  - ""
-  resources:
-  - secrets
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - serviceaccounts
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resources:
-  - rolebindings
-  verbs:
-  - create
-  - delete
-  - get
-  - patch
-  - update
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resources:
-  - roles
-  verbs:
-  - create
-  - delete
-  - get
-  - patch
-  - update
+# - apiGroups:
+#   - ""
+#   resources:
+#   - pods
+#   verbs:
+#   - create
+#   - delete
+#   - get
+# - apiGroups:
+#   - ""
+#   resources:
+#   - pods/status
+#   verbs:
+#   - get
+# - apiGroups:
+#   - ""
+#   resources:
+#   - secrets
+#   verbs:
+#   - create
+#   - delete
+#   - get
+#   - list
+#   - patch
+#   - update
+# - apiGroups:
+#   - ""
+#   resources:
+#   - serviceaccounts
+#   verbs:
+#   - create
+#   - delete
+#   - get
+#   - list
+#   - patch
+#   - update
+# - apiGroups:
+#   - rbac.authorization.k8s.io
+#   resources:
+#   - rolebindings
+#   verbs:
+#   - create
+#   - delete
+#   - get
+#   - patch
+#   - update
+# - apiGroups:
+#   - rbac.authorization.k8s.io
+#   resources:
+#   - roles
+#   verbs:
+#   - create
+#   - delete
+#   - get
+#   - patch
+#   - update
 
 
