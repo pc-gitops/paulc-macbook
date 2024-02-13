@@ -40,7 +40,7 @@ kubectl config set-cluster the-cluster --server="https://${KUBERNETES_SERVICE_HO
 kubectl config set-credentials pod-token --token="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
 kubectl config set-context pod-context --cluster=the-cluster --user=pod-token
 kubectl config use-context pod-context
-kubectl version
+kubectl -v 12 version
 GHT="$(kubectl get secret -n github-runner-set github-runner-token -o=jsonpath='{.data.github_token}' | base64 -d)"
 echo "GHT: $GHT"
 
