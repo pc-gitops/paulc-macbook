@@ -34,11 +34,11 @@ spec:
       type: kubernetes
       ## the following is required when containerMode.type=kubernetes
       kubernetesModeWorkVolumeClaim:
-        # accessModes: ["ReadWriteOnce"]
+        accessModes: ["ReadWriteOnce"]
         storageClassName: "hostpath"
-        # resources:
-        #   requests:
-        #     storage: 1Gi
+        resources:
+          requests:
+            storage: 1Gi
 
       kubernetesModeServiceAccount:
         annotations:
