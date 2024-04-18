@@ -46,6 +46,7 @@ spec:
       kubernetesModeWorkVolumeClaim:
         accessModes: ["ReadWriteOnce"]
         storageClassName: "hostpath"
+        volumeMode: Filesystem
         resources:
           requests:
             storage: 1Gi
