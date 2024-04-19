@@ -8,7 +8,7 @@ jobs:
   infra:
     runs-on: posdev-pcarlton2-pc-gitops-paulc-macbook
     container:
-      image: 617912315635.dkr.ecr.us-west-2.amazonaws.com/runner:0.1.11
+      image: 617912315635.dkr.ecr.us-west-2.amazonaws.com/runner:0.1.12
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
