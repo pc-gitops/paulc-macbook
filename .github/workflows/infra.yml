@@ -17,3 +17,5 @@ jobs:
           cache: true # setup-go has built-in mod caching: https://github.com/actions/setup-go#caching-dependency-files-and-build-outputs
       - name: build
         run: go build ./...
+
+        
