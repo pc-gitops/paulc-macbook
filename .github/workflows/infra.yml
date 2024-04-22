@@ -14,4 +14,4 @@ jobs:
       - name: test
         run: |
           pwd
-          echo "no"
+          echo "yes"
