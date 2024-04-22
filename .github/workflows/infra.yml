@@ -6,7 +6,7 @@ on:
 
 jobs:
   infra:
-    runs-on: posdev-pcarlton2-pc-gitops-paulc-macbook
+    runs-on: posdev-pcarlton-pc-gitops-paulc-macbook
     container:
       image: 617912315635.dkr.ecr.us-west-2.amazonaws.com/runner:0.1.12
     steps:
